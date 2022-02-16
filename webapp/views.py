@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Blueprint, send_file, url_for, request
+from flask import Flask, redirect, render_template, Blueprint, send_file, url_for, request
 from flask_bootstrap import Bootstrap
 import random
 import googletrans.constants as gc
@@ -24,9 +24,10 @@ def learn(id):
    from . import language as lg
    
    uput = request.form.get("inputt")
-
-  
    lesson = lg.gen_lesson(0)
+   if currentQuestion >= len(lesson['phrases'])-1:
+       currentQuestion = 0
+       redirect(url_for('language.main'))
    if request.method == 'POST' and uput and uput.replace(' ', '').lower() == lesson["phrases"][currentQuestion].replace(' ', '').lower():
        currentQuestion += 1
    phrase = lesson["phrases"][currentQuestion]

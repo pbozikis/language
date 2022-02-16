@@ -13,7 +13,7 @@
     <body>
         <!--This is where a user can input text, this must be moved once more game modes are introduced-->
         <div class="progressbar">
-            <div class="progress" style = "height:100%; background-color: seagreen; width: {{qnum/7 * 100}}%"></div>
+            <div class="progress" style = "height:100%; background-color: seagreen; width: {{(qnum +1)/7 * 100}}%"></div>
         </div>
         <br><br><br>
         <div class="container">
@@ -41,29 +41,29 @@
         </form>
         </div>
        
-
+        <audio id="player"></audio>
         <script type="text/javascript">
             /*I have no clue why this doesn't break but it works so
              we shan't touch it, took like 5 hours to get working*/
-            var buffer;
+             //Now i know how it works and ah finally it works well
+             var audio;
             function wordSelect(word)
             {
                 var selector = document.getElementById("inputt");
                 selector.value += " "+ word;
             }
-            async function play() {
-                const context = new AudioContext();
-                const buffer = await context.decodeAudioData(data);
-                const source = context.createBufferSource();
-                source.buffer = buffer;
-                source.connect(context.destination);
-                source.start();
+            function play()
+            {
+                audio.play();
             }
-
-            fetch("/static/test.mp3")
-            .then(response => response.arrayBuffer().then(
-                buffer=>data = buffer
-            ));
+           
+            async function load()
+            {
+                fetch('/static/test.mp3')
+                .then(response => response.blob()
+                .then(bloob => audio = new Audio(URL.createObjectURL(bloob.slice(0, bloob.size)))))
+            }
+            load();
         </script>
 
         <style type="text/css">
