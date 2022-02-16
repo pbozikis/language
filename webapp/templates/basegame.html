@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
         <title>Language Learner 2000</title>
     </head>
     <!--My plan for this is to have this as the basegame then different modules for each different game type
@@ -13,41 +13,47 @@
     <body>
         <!--This is where a user can input text, this must be moved once more game modes are introduced-->
         <div class="progressbar">
-            <div class="progress" style = "height:100%; background-color: seagreen; width: {{qnum/7 * 100}}%">
-        </div>
+            <div class="progress" style = "height:100%; background-color: seagreen; width: {{qnum/7 * 100}}%"></div>
         </div>
         <br><br><br>
         <div class="container">
-        <h2>Translate this to English:</h2>
-        <h3>{{lesson["translation"]}}<br>{%if lesson['pronunciation']%}({{lesson["pronunciation"]}}){%endif%}</h3>
-        <br>
-        <br>
-        <br>
-        <div class="textzone">
-            <form method="POST">
-            <input type="text" id="inputt" name="inputt">
+            <h2>Translate this to English:</h2>
+            <h3>{{lesson["translation"]}}<br>{%if lesson['pronunciation']%}({{lesson["pronunciation"]}}){%endif%}</h3>
+            <button type="button" class="sound" onclick="playsound('{{lesson['translation']}})', '{{id}}')"><i class='fa fa-volume-up'></i></button>
             <br>
-        </div>
-        <br>
-        <br>
-        <div class="wordlist">
-            {% for word in lesson["wordbank"] %}
-            <button class="bank" type="button" onclick="wordSelect('{{word}}')">{{word}}</button>
-            {%endfor%}
-        </div>
-        <br>
-        <br>
-        <input class="checker" type="submit" value="Check">
+            <br>
+            <br>
+            <div class="textzone">
+        <form method="POST">
+                    <input type="text" id="inputt" name="inputt">
+                    <br>
+            </div>
+            <br>
+            <br>
+            <div class="wordlist">
+                {% for word in lesson["wordbank"] %}
+                    <button class="bank" type="button" onclick="wordSelect('{{word}}')">{{word}}</button>
+                {%endfor%}
+            </div>
+            <br>
+            <br>
+            <input class="checker" type="submit" value="Check">
         </form>
         </div>
 
         <script type="text/javascript">
-           
+            fetch('/webapp/static/test.mp3');
             function wordSelect(word)
             {
                 var selector = document.getElementById("inputt");
                 selector.value += " "+ word;
             }
+            function playsound(phrase, lang)
+            {
+                let audio = new Audio('/static/test.mp3');
+                audio.play();
+            }
+
             
         </script>
 
@@ -56,6 +62,17 @@
                 background-color: #ffe135;
                 margin:0;
                 padding:0;
+            }
+            .sound
+            {
+                background-color: transparent;
+                border-style: none;
+            }
+            .sound i{
+                font-size: larger;
+            }
+            .sound :hover{
+                cursor: pointer;
             }
             .progressbar
             {
@@ -114,7 +131,6 @@
                 border: 2px solid black;
             }
             .checker:hover{
-                background-color: green;
                 cursor: pointer;
             }
         </style>

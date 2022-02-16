@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Blueprint, url_for, request
+from flask import Flask, render_template, Blueprint, send_file, url_for, request
 from flask_bootstrap import Bootstrap
 import random
 import googletrans.constants as gc
@@ -35,7 +35,7 @@ def learn(id):
    lesson['translation'] = translated
    lesson['pronunciation'] = pronunciation
    lesson['wordbank'] = wordbanks
+   #lg.gen_voice(lesson["translation"], id)
    if pronunciation == phrase:
        lesson['pronunciation'] = ''
-
    return render_template("basegame.html",id=id, lesson=lesson, qnum= currentQuestion)

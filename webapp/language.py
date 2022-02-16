@@ -1,18 +1,30 @@
+from flask import send_file
 from googletrans import Translator
 import json
 import random
+from gtts import gTTS
+from io import BytesIO
 
 translator = Translator()
 def translate(text, src, dest):
     translation = translator.translate(text, dest = dest, src = src)
     return translation.text, translation.pronunciation
+
 def gen_wordbank(phrase, current_lesson):
     wordBank = phrase.split() + [i for i in current_lesson["phrases"][random.randint(0, len(current_lesson))].split() if i not in phrase]
     random.shuffle(wordBank)
     return wordBank
 
+def gen_voice(phrase, lang):
+    rec = gTTS(text=phrase,lang=lang, slow=False)
+    #buffer = BytesIO()
+    #rec.write_to_fp(buffer)
+    #send_file(buffer, filename = 'sound.mp3')
+    rec.save("webapp/static/test.mp3")
+
+
 def gen_lesson(lessonNum):
-    #f = open("c:/Users/panbo/Desktop/apps/language/webapp/static/phrases.json", "r")
+    #f = open("webapp/static/phrases.json", "r")
     jason = '''{
      "lessons":[
        {"phrases":["Hello", "A man", "A woman", "A dog", "The man and the woman", "You are a woman", "Pablo is a man"]},
@@ -23,7 +35,6 @@ def gen_lesson(lessonNum):
     current_lesson = json.loads(jason)["lessons"][lessonNum]
 
     return current_lesson
-
 
 # def flashcard(text):
 #     lang, phon = translate(text)
