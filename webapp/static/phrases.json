@@ -1,0 +1,10 @@
+{
+    "lessons":[
+        {
+            "phrases":["Hello", "A man", "A woman", "A dog", "The man and the woman", "You are a woman", "Pablo is a man"]
+        },
+        {"phrases":["Hello", "How are you?", "My name is Pablo", "What is your name?", "Nice to meet you", "I am good, thank you", "Hello Pablo"]
+
+        }
+    ]
+}

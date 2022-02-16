@@ -1,0 +1,28 @@
+{% extends 'basegame.html'%}
+<div class="progressbar">
+    <div class="progress" style = "height:100%; background-color: seagreen; width: {{qnum/7 * 100}}%">
+
+    </div>
+</div>
+<br><br><br>
+<div class="container">
+<h2>Translate this to English:</h2>
+<h3>{{lesson["translation"]}}<br>({{lesson["pronunciation"]}})</h3>
+<br>
+<br>
+<br>
+<div class="textzone">
+    <input type="text" id="inputt" name="inputt">
+    <br>
+</div>
+<br>
+<br>
+<div class="wordlist">
+    {% for word in lesson["wordbank"] %}
+    <button class="bank" onclick="wordSelect('{{word}}')">{{word}}</button>
+    {%endfor%}
+</div>
+<br>
+<br>
+<button class="checker" onclick="check()">Check</button>
+</div>
