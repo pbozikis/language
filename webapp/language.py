@@ -12,17 +12,15 @@ def gen_wordbank(phrase, current_lesson):
     return wordBank
 
 def gen_lesson(lessonNum):
-    f = open("c:/Users/panbo/Desktop/apps/language/webapp/static/phrases.json", "r")
-    '''jason = {
+    #f = open("c:/Users/panbo/Desktop/apps/language/webapp/static/phrases.json", "r")
+    jason = '''{
      "lessons":[
+       {"phrases":["Hello", "A man", "A woman", "A dog", "The man and the woman", "You are a woman", "Pablo is a man"]},
          {"phrases":["Hello", "How are you?", "My name is Pablo", "What is your name?", "Nice to meet you", "I am good, thank you", "Hello Pablo"]
-           
-         },
-       {"phrases":["Hello", "A man", "A woman", "A dog", "The man and the woman", "You are a woman", "Pablo is a man"]}
+         }
      ]}'''
-    jason = f.read()
-    #current_lesson = json.loads(jason)["lessons"][lessonNum]
-    #current_lesson = json.loads(jason)["lessons"][lessonNum]
+    #jason = f.read()
+    current_lesson = json.loads(jason)["lessons"][lessonNum]
 
     return current_lesson
 
