@@ -16,6 +16,7 @@ def main():
         sugg_list[key] = sugg_list[key].capitalize()
     return render_template('learn.html', languages=langs)
 
+
 currentQuestion = 0
 @main_blueprint.route('/learn/<id>', methods = ["get", "post"])
 def learn(id):
@@ -35,7 +36,7 @@ def learn(id):
    lesson['translation'] = translated
    lesson['pronunciation'] = pronunciation
    lesson['wordbank'] = wordbanks
-   #lg.gen_voice(lesson["translation"], id)
+   lg.gen_voice(lesson["translation"], id)
    if pronunciation == phrase:
        lesson['pronunciation'] = ''
    return render_template("basegame.html",id=id, lesson=lesson, qnum= currentQuestion)

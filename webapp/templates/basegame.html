@@ -19,7 +19,7 @@
         <div class="container">
             <h2>Translate this to English:</h2>
             <h3>{{lesson["translation"]}}<br>{%if lesson['pronunciation']%}({{lesson["pronunciation"]}}){%endif%}</h3>
-            <button type="button" class="sound" onclick="playsound('{{lesson['translation']}})', '{{id}}')"><i class='fa fa-volume-up'></i></button>
+            <button type="button" class="sound" onclick="play()"><i class='fa fa-volume-up'></i></button>
             <br>
             <br>
             <br>
@@ -40,21 +40,30 @@
             <input class="checker" type="submit" value="Check">
         </form>
         </div>
+       
 
         <script type="text/javascript">
-            fetch('/webapp/static/test.mp3');
+            /*I have no clue why this doesn't break but it works so
+             we shan't touch it, took like 5 hours to get working*/
+            var buffer;
             function wordSelect(word)
             {
                 var selector = document.getElementById("inputt");
                 selector.value += " "+ word;
             }
-            function playsound(phrase, lang)
-            {
-                let audio = new Audio('/static/test.mp3');
-                audio.play();
+            async function play() {
+                const context = new AudioContext();
+                const buffer = await context.decodeAudioData(data);
+                const source = context.createBufferSource();
+                source.buffer = buffer;
+                source.connect(context.destination);
+                source.start();
             }
 
-            
+            fetch("/static/test.mp3")
+            .then(response => response.arrayBuffer().then(
+                buffer=>data = buffer
+            ));
         </script>
 
         <style type="text/css">
