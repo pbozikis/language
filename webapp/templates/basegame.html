@@ -13,56 +13,109 @@
     <body>
         <!--This is where a user can input text, this must be moved once more game modes are introduced-->
         <div class="progressbar">
-            <div class="progress" style = "height:100%; background-color: seagreen; width: {{(qnum +1)/7 * 100}}%"></div>
+            <div class="progress" id="progressTracker"></div>
         </div>
         <br><br><br>
         <div class="container">
-            <h2>Translate this to English:</h2>
-            <h3>{{lesson["translation"]}}<br>{%if lesson['pronunciation']%}({{lesson["pronunciation"]}}){%endif%}</h3>
-            <button type="button" class="sound" onclick="play()"><i class='fa fa-volume-up'></i></button>
+            <h2 id="title">Translate this to English:</h2>
+            <h3 id="trans"></h3>
+            <button id="btnplay" type="button" class="sound" onclick="play()"><i class='fa fa-volume-up'></i></button>
             <br>
             <br>
             <br>
             <div class="textzone">
-        <form method="POST">
+        <!--<form method="POST">-->
                     <input type="text" id="inputt" name="inputt">
                     <br>
             </div>
             <br>
             <br>
-            <div class="wordlist">
-                {% for word in lesson["wordbank"] %}
-                    <button class="bank" type="button" onclick="wordSelect('{{word}}')">{{word}}</button>
-                {%endfor%}
+            <div id="wordbank"class="wordlist">
+
             </div>
             <br>
             <br>
-            <input class="checker" type="submit" value="Check">
-        </form>
+            <button class="checker" type="button" onclick="check()">Check</button>
+            <!--<input class="checker" type="submit" value="Check">-->
+       <!-- </form>--> 
         </div>
        
         <script type="text/javascript">
-            /*I have no clue why this doesn't break but it works so
-             we shan't touch it, took like 5 hours to get working*/
-             //Now it finally works and i get what was wrong ah
+             var correct;
              var audio;
-            function wordSelect(word)
-            {
-                var selector = document.getElementById("inputt");
-                selector.value += " "+ word;
-            }
+             var current_q= 0;
             function play()
             {
                 audio.play();
             }
-           
+
+            //unused
+            function getCookie(needle)
+            {
+                let cookies = decodeURIComponent(document.cookie).split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let rat = cookies[i].split('=');
+                    if(rat[0] == needle)
+                    {
+                        return(rat[1]);
+                    }
+                }
+            }
+
             async function load()
             {
+                //reset inputs
+                document.getElementById('wordbank').innerHTML = '';
+                document.getElementById('inputt').value = '';
+
+                
+
+                //fetch("{{url_for('language.getQuestion', qnum=current_q, id=id)}}")
+                fetch("/getQuestion/"+current_q+"/{{id}}")
+                .then(response=> response.json())
+                .then((question) => {
+                question['wordbank'].forEach(word => {
+                    let btn = document.createElement('button');
+                    btn.className = 'bank';
+                    btn.onclick = function(){
+                        var selector = document.getElementById("inputt");
+                        selector.value += " "+ word;
+                    }
+                    btn.innerHTML = word;
+                    document.getElementById('wordbank').appendChild(btn);
+                });
+                //set trackbar
+                document.getElementById('progressTracker').style =
+                "height: 100%; background-color: seagreen; width: "+((current_q+1) / question['length'])*100 +"%;";
+                //get sound must be AFTER getQuestion u stipud
                 fetch('/static/test.mp3')
                 .then(response => response.blob()
-                .then(bloob => audio = new Audio(URL.createObjectURL(bloob.slice(0, bloob.size)))))
+                .then(bloob => audio = new Audio(URL.createObjectURL(bloob.slice(0, bloob.size)))));
+
+                correct = question['source'];
+                let rat = document.getElementById('trans');
+                rat.innerHTML = question["dest"]+ "<br>" +question['pronun']; //? "("+question['pronun']+")" : '';
+
+            });
+            }
+                        
+            function check()
+            {
+                let uput = document.getElementById('inputt').value;
+                if(uput.replace(/\s/g, '') == correct.replace(/\s/g, ''))
+                {
+                    //alert("correct");
+                    //let new_num = Number(getCookie('qnum'));
+                    //document.cookie = "qnum="+(new_num)+";";
+                    current_q += 1;
+                    load();
+                    
+                } else{
+                    alert("incorrect");
+                }
             }
             load();
+            //document.cookie = "qnum=0";
         </script>
 
         <style type="text/css">
@@ -87,6 +140,10 @@
                 width:100%;
                 height: 15px;
                 background-color: transparent;
+            }
+            .progress
+            {
+                transition: width 1s ease-in-out;
             }
             .container
             {

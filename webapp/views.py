@@ -2,7 +2,11 @@ from flask import Flask, redirect, render_template, Blueprint, send_file, url_fo
 from flask_bootstrap import Bootstrap
 import random
 import googletrans.constants as gc
+
+#this is where the magic happens, pretty much organises the data to be served for each 'route'
 main_blueprint = Blueprint('language', __name__)
+
+#display all languages (the request get search doesn't work yet)
 @main_blueprint.route('/learn', methods = ['get'])
 def main():
     text = request.args.get('jsdata')
@@ -17,27 +21,31 @@ def main():
     return render_template('learn.html', languages=langs)
 
 
-currentQuestion = 0
+#create a route to handle ajax/jquery requests, for dynamic data retrieval without triggering a page reload
+#why is it so slow though?
+num = 0
+@main_blueprint.route('/getQuestion/<qnum>/<id>', methods=['get'])
+def getQuestion(qnum, id):
+    #We need to get a question and make it a nice lil json package
+    #i think, i confuse
+    from . import language as lg
+    import json
+    lesson = lg.gen_lesson(0) #lesson 0
+    phrase = lesson["phrases"][int(qnum)]
+    translated, pronunciation = lg.translate(phrase, 'en', id)
+    wordbank = lg.gen_wordbank(phrase, lesson)
+    question = dict()
+    question["source"] = phrase
+    question["dest"]= translated
+    question['pronun'] = pronunciation * (pronunciation != phrase)
+    question['wordbank'] = wordbank
+    question['length'] = len(lesson['phrases'])
+    lg.gen_voice(question["dest"], id)
+    # if qnum >= len(question['source'])-1:
+    #    qnum = 0
+    #    return(redirect(url_for('language.main')))
+    return(json.dumps(question))
+    
 @main_blueprint.route('/learn/<id>', methods = ["get", "post"])
 def learn(id):
-   global currentQuestion
-   from . import language as lg
-   
-   uput = request.form.get("inputt")
-   lesson = lg.gen_lesson(0)
-   if currentQuestion >= len(lesson['phrases'])-1:
-       currentQuestion = 0
-       redirect(url_for('language.main'))
-   if request.method == 'POST' and uput and uput.replace(' ', '').lower() == lesson["phrases"][currentQuestion].replace(' ', '').lower():
-       currentQuestion += 1
-   phrase = lesson["phrases"][currentQuestion]
-   translated, pronunciation = lg.translate(phrase, 'en', id)
-   wordbanks = lg.gen_wordbank(phrase, lesson)
-   lesson["phrases"] = phrase
-   lesson['translation'] = translated
-   lesson['pronunciation'] = pronunciation
-   lesson['wordbank'] = wordbanks
-   lg.gen_voice(lesson["translation"], id)
-   if pronunciation == phrase:
-       lesson['pronunciation'] = ''
-   return render_template("basegame.html",id=id, lesson=lesson, qnum= currentQuestion)
+   return render_template("basegame.html",id=id)

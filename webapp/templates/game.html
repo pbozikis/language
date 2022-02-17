@@ -1,28 +1,146 @@
-{% extends 'basegame.html'%}
-<div class="progressbar">
-    <div class="progress" style = "height:100%; background-color: seagreen; width: {{qnum/7 * 100}}%">
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+        <title>Language Learner 2000</title>
+    </head>
+    <!--My plan for this is to have this as the basegame then different modules for each different game type
+    so for example the user can scale the difficulty by choosing whether they must type the translated language or 
+    the native one, or just click bubbles with the words on them like duolingo. Each activity type will have to work with
+    this base game template-->
+    <body>
+        <!--This is where a user can input text, this must be moved once more game modes are introduced-->
+        <div class="progressbar">
+            <div class="progress" style = "height:100%; background-color: seagreen; width: {{(qnum +1)/7 * 100}}%"></div>
+        </div>
+        <br><br><br>
+        <div class="container">
+            <h2>Translate this to English:</h2>
+            <h3>{{lesson["translation"]}}<br>{%if lesson['pronunciation']%}({{lesson["pronunciation"]}}){%endif%}</h3>
+            <button type="button" class="sound" onclick="play()"><i class='fa fa-volume-up'></i></button>
+            <br>
+            <br>
+            <br>
+            <div class="textzone">
+        <!--<form method="POST">-->
+                    <input type="text" id="inputt" name="inputt">
+                    <br>
+            </div>
+            <br>
+            <br>
+            <div class="wordlist">
+                {% for word in lesson["wordbank"] %}
+                    <button class="bank" type="button" onclick="wordSelect('{{word}}')">{{word}}</button>
+                {%endfor%}
+            </div>
+            <br>
+            <br>
+            <!--<input class="checker" type="submit" value="Check">-->
+       <!-- </form>--> 
+        </div>
+       
+        <script type="text/javascript">
+            /*I have no clue why this doesn't break but it works so
+             we shan't touch it, took like 5 hours to get working*/
+             //Now it finally works and i get what was wrong ah
+             var audio;
+            function wordSelect(word)
+            {
+                var selector = document.getElementById("inputt");
+                selector.value += " "+ word;
+            }
+            function play()
+            {
+                audio.play();
+            }
+           
+            async function load()
+            {
+                fetch('/static/test.mp3')
+                .then(response => response.blob()
+                .then(bloob => audio = new Audio(URL.createObjectURL(bloob.slice(0, bloob.size)))))
+            }
+            load();
+        </script>
 
-    </div>
-</div>
-<br><br><br>
-<div class="container">
-<h2>Translate this to English:</h2>
-<h3>{{lesson["translation"]}}<br>({{lesson["pronunciation"]}})</h3>
-<br>
-<br>
-<br>
-<div class="textzone">
-    <input type="text" id="inputt" name="inputt">
-    <br>
-</div>
-<br>
-<br>
-<div class="wordlist">
-    {% for word in lesson["wordbank"] %}
-    <button class="bank" onclick="wordSelect('{{word}}')">{{word}}</button>
-    {%endfor%}
-</div>
-<br>
-<br>
-<button class="checker" onclick="check()">Check</button>
-</div>
+        <style type="text/css">
+            body{
+                background-color: #ffe135;
+                margin:0;
+                padding:0;
+            }
+            .sound
+            {
+                background-color: transparent;
+                border-style: none;
+            }
+            .sound i{
+                font-size: larger;
+            }
+            .sound :hover{
+                cursor: pointer;
+            }
+            .progressbar
+            {
+                width:100%;
+                height: 15px;
+                background-color: transparent;
+            }
+            .container
+            {
+                text-align: center;
+                
+            }
+            .textzone input[type=text]
+            {
+                background-color: transparent;
+                border-style: none;
+                border-bottom: 2px solid black;
+                width:400px;
+                font-size: larger;
+            }
+            .wordlist
+            {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            h2, h3{
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            .bank
+            {
+                background-color: #35b8ff;
+                border-style: none;
+                border-radius: 20px;
+                font-size: large;
+                padding-left:10px;
+                padding-right: 10px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border: 2px solid black;
+            }
+            .bank:hover
+            {
+                background-color: #ff7b35;
+                cursor: pointer;
+            }
+            .checker
+            {
+                border-style: none;
+                background-color: seagreen;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: large;
+                padding-left:10px;
+                padding-right: 10px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border: 2px solid black;
+            }
+            .checker:hover{
+                cursor: pointer;
+            }
+        </style>
+    </body>
+</html>

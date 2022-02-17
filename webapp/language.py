@@ -3,7 +3,8 @@ from googletrans import Translator
 import json
 import random
 from gtts import gTTS
-from io import BytesIO
+
+#this is the main module for the lesson generation and translation
 
 translator = Translator()
 def translate(text, src, dest):
@@ -16,15 +17,15 @@ def gen_wordbank(phrase, current_lesson):
     return wordBank
 
 def gen_voice(phrase, lang):
-    rec = gTTS(text=phrase,lang=lang, slow=False)
-    #buffer = BytesIO()
-    #rec.write_to_fp(buffer)
-    #send_file(buffer, filename = 'sound.mp3')
+    try:
+        rec = gTTS(text=phrase,lang=lang, slow=False)
+    except ValueError:
+        rec = gTTS(text="Sorry, this language is not supported", lang='en')
     rec.save("webapp/static/test.mp3")
 
 
 def gen_lesson(lessonNum):
-    #f = open("webapp/static/phrases.json", "r")
+    #f = open("/static/phrases.json", "r")
     jason = '''{
      "lessons":[
        {"phrases":["Hello", "A man", "A woman", "A dog", "The man and the woman", "You are a woman", "Pablo is a man"]},
