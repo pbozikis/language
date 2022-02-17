@@ -12,8 +12,8 @@
     this base game template-->
     <body>
         <!--This is where a user can input text, this must be moved once more game modes are introduced-->
-        <div class="progressbar">
-            <div class="progress" id="progressTracker"></div>
+        <div id="tracker_parent" class="progressbar">
+            <div class="progress" id="progressTracker" style="width:0;"></div>
         </div>
         <br><br><br>
         <div class="container">
@@ -25,7 +25,7 @@
             <br>
             <div class="textzone">
         <!--<form method="POST">-->
-                    <input type="text" id="inputt" name="inputt">
+                    <input type="text" id="inputt" autocomplete="off" name="inputt">
                     <br>
             </div>
             <br>
@@ -35,7 +35,7 @@
             </div>
             <br>
             <br>
-            <button class="checker" type="button" onclick="check()">Check</button>
+            <button id='check'class="checker" type="button" onclick="check()">Check</button>
             <!--<input class="checker" type="submit" value="Check">-->
        <!-- </form>--> 
         </div>
@@ -44,11 +44,19 @@
              var correct;
              var audio;
              var current_q= 0;
+             var max_questions;
             function play()
             {
                 audio.play();
             }
 
+            document.getElementById('inputt').addEventListener("keyup", function(event){
+                if(event.keyCode == 13)
+                {
+                    event.preventDefault();
+                    document.getElementById('check').click();
+                }
+            })
             //unused
             function getCookie(needle)
             {
@@ -61,19 +69,25 @@
                     }
                 }
             }
-
+            function lessonComplete()
+            {
+                document.getElementById('tracker_parent').style =
+                "height: 100vh; background-color: seagreen; margin: 0; padding:";
+                let lmth = 
+                "<h1>Lesson Complete!</h1><img src='/static/frog.png'><form action='{{url_for('language.main')}}'><input type='submit' value='Continue'></form>";
+                let divi = document.createElement('div');
+                divi.className = "wrapper fade-in";
+                divi.innerHTML = lmth;
+                document.getElementById("progressTracker").appendChild(divi);
+            }
             function load()
             {
-                //reset inputs
-                document.getElementById('wordbank').innerHTML = '';
-                document.getElementById('inputt').value = '';
-
-
-
                 //fetch("{{url_for('language.getQuestion', qnum=current_q, id=id)}}")
                 fetch("/getQuestion/"+current_q+"/{{id}}")
                 .then(response=> response.json())
-                .then((question) => {
+                .then((question) => {   
+                    document.getElementById('wordbank').innerHTML = '';
+                    document.getElementById('inputt').value = '';         
                 question['wordbank'].forEach(word => {
                     let btn = document.createElement('button');
                     btn.className = 'bank';
@@ -85,8 +99,9 @@
                     document.getElementById('wordbank').appendChild(btn);
                 });
                 //set trackbar
+                max_questions = question['length'];
                 document.getElementById('progressTracker').style =
-                "height: 100%; background-color: seagreen; width: "+((current_q+1) / question['length'])*100 +"%;";
+                "height: 100%; width: "+((current_q+1) / question['length'])*100 +"%;";
                 //get sound must be AFTER getQuestion u stipud
                 fetch('/static/test.mp3')
                 .then(response => response.blob()
@@ -95,7 +110,6 @@
                 correct = question['source'];
                 let rat = document.getElementById('trans');
                 rat.innerHTML = question["dest"]+ "<br>" +question['pronun']; //? "("+question['pronun']+")" : '';
-
             });
             }
                         
@@ -104,6 +118,11 @@
                 let uput = document.getElementById('inputt').value;
                 if(uput.replace(/\s/g, '') == correct.replace(/\s/g, ''))
                 {
+                    if(current_q + 1 >= max_questions)
+                    {
+                        lessonComplete();
+                        return(0);
+                    }
                     //alert("correct");
                     //let new_num = Number(getCookie('qnum'));
                     //document.cookie = "qnum="+(new_num)+";";
@@ -123,7 +142,24 @@
                 background-color: #ffe135;
                 margin:0;
                 padding:0;
+                overflow-y: hidden;
             }
+            .fade-in {
+                opacity: 1;
+                animation-name: fadeInOpacity;
+                animation-iteration-count: 1;
+                animation-timing-function: ease-in;
+                animation-duration: 2s;
+                }
+
+                @keyframes fadeInOpacity {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+                }
             .sound
             {
                 background-color: transparent;
@@ -140,9 +176,11 @@
                 width:100%;
                 height: 15px;
                 background-color: transparent;
+                transition: height 2s ease-in-out
             }
             .progress
             {
+                background-color: seagreen;
                 transition: width 1s ease-in-out;
             }
             .container
@@ -161,6 +199,32 @@
             .wordlist
             {
                 font-family: Arial, Helvetica, sans-serif;
+            }
+            .wrapper
+            {
+                position: absolute;
+                font-family: Arial, Helvetica, sans-serif;
+                text-align: center;
+                color: white;
+                top: 30%;
+                left: 40%;
+            }
+            .wrapper img{
+                height: 100px;
+            }
+            .wrapper input{
+                background-color: #ff7b35;
+                border-style: none;
+                padding: 10px;
+                font-size: large;
+                border: 2px solid black;
+                transition: all 1s;
+
+            }
+            .wrapper input:hover{
+                cursor: pointer;
+                background-color: black;
+                color: white;
             }
             h2, h3{
                 font-family: Arial, Helvetica, sans-serif;
