@@ -13,7 +13,7 @@ def main():
     langs = gc.LANGUAGES
     sugg_list = []
     if text:
-        sugg_list = {'hi':'hindi'}#[i for i in langs if text.lower() in langs[i]]
+        sugg_list = {'en':'english'}#[i for i in langs if text.lower() in langs[i]]
     else:
         sugg_list = langs
     for key in sugg_list:
@@ -27,7 +27,6 @@ num = 0
 @main_blueprint.route('/getQuestion/<qnum>/<id>', methods=['get'])
 def getQuestion(qnum, id):
     #We need to get a question and make it a nice lil json package
-    #i think, i confuse
     from . import language as lg
     import json
     lesson = lg.gen_lesson(0) #lesson 0
@@ -41,9 +40,6 @@ def getQuestion(qnum, id):
     question['wordbank'] = wordbank
     question['length'] = len(lesson['phrases'])
     lg.gen_voice(question["dest"], id)
-    # if qnum >= len(question['source'])-1:
-    #    qnum = 0
-    #    return(redirect(url_for('language.main')))
     return(json.dumps(question))
     
 @main_blueprint.route('/learn/<id>', methods = ["get", "post"])
