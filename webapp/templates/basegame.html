@@ -47,13 +47,16 @@
              var max_questions;
             function play()
             {
+                //Simply plays audio (Which should be loaded)
                 audio.play();
             }
 
+            //Checks if enter is pressed while user is in the typing interface
             document.getElementById('inputt').addEventListener("keyup", function(event){
                 if(event.keyCode == 13)
                 {
                     event.preventDefault();
+                    //Does the same thing as if the user clicked the check button
                     document.getElementById('check').click();
                 }
             })
@@ -69,6 +72,7 @@
                     }
                 }
             }
+            //Generates the html that appears when a lesson is finished
             function lessonComplete()
             {
                 document.getElementById('tracker_parent').style =
@@ -80,12 +84,15 @@
                 divi.innerHTML = lmth;
                 document.getElementById("progressTracker").appendChild(divi);
             }
+
+            //Loads a new question into the html
             function load()
             {
                 //fetch("{{url_for('language.getQuestion', qnum=current_q, id=id)}}")
-                fetch("/getQuestion/"+current_q+"/{{id}}")
+                fetch("/getQuestion/"+current_q+"/{{id}}") //Go to route which is a python function whoa
                 .then(response=> response.json())
                 .then((question) => {   
+                    //Reset the inputs
                     document.getElementById('wordbank').innerHTML = '';
                     document.getElementById('inputt').value = '';         
                 question['wordbank'].forEach(word => {
@@ -102,17 +109,18 @@
                 max_questions = question['length'];
                 document.getElementById('progressTracker').style =
                 "height: 100%; width: "+((current_q+1) / question['length'])*100 +"%;";
-                //get sound must be AFTER getQuestion u stipud
+                //get sound must be AFTER getQuestion
                 fetch('/static/test.mp3')
                 .then(response => response.blob()
-                .then(bloob => audio = new Audio(URL.createObjectURL(bloob.slice(0, bloob.size)))));
+                .then(bloob => audio = new Audio(URL.createObjectURL(bloob))));
 
                 correct = question['source'];
                 let rat = document.getElementById('trans');
                 rat.innerHTML = question["dest"]+ "<br>" +question['pronun']; //? "("+question['pronun']+")" : '';
             });
             }
-                        
+
+            //Check user input with the answer (needs perfecting)     
             function check()
             {
                 let uput = document.getElementById('inputt').value;
@@ -130,6 +138,7 @@
                     load();
                     
                 } else{
+                    //Make it nicer, maybe a red thing idk
                     alert("incorrect");
                 }
             }

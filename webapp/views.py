@@ -21,9 +21,7 @@ def main():
     return render_template('learn.html', languages=langs)
 
 
-#create a route to handle ajax/jquery requests, for dynamic data retrieval without triggering a page reload
-#why is it so slow though?
-num = 0
+#create a route to handle getQuestion requests
 @main_blueprint.route('/getQuestion/<qnum>/<id>', methods=['get'])
 def getQuestion(qnum, id):
     #We need to get a question and make it a nice lil json package
@@ -41,7 +39,8 @@ def getQuestion(qnum, id):
     question['length'] = len(lesson['phrases'])
     lg.gen_voice(question["dest"], id)
     return(json.dumps(question))
-    
+
+#Route for lesson
 @main_blueprint.route('/learn/<id>', methods = ["get", "post"])
 def learn(id):
    return render_template("basegame.html",id=id)
