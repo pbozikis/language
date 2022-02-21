@@ -8,6 +8,7 @@ from gtts import gTTS
 
 translator = Translator()
 def translate(text, src, dest):
+    translator.translate()
     translation = translator.translate(text, dest = dest, src = src)
     return translation.text, translation.pronunciation
 
