@@ -37,19 +37,3 @@ def gen_lesson(lessonNum):
     current_lesson = json.loads(jason)["lessons"][lessonNum]
 
     return current_lesson
-
-# def flashcard(text):
-#     lang, phon = translate(text)
-#     ans = input(f"What's {lang}({phon}) mean in English? ")
-#     if ans == text:
-#         print("Correct! Good work!")
-#     else:
-#         print("U stipud")
-#         print(f"It's actually: {text}")
-    
-#lesson one
-# print("Welcome to this app, you're probably here because you're scared of the duolingo owl...")
-# input()
-# print("Well you're not safe here, we have Pablo the Frog, and he will kill your entire family if yoy fail this course...")
-# input()
-# print("Have fun!")
